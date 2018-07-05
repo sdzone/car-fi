@@ -1,4 +1,4 @@
-package com.example.sdzone.myapplication;
+package com.example.sdzone.carfi;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.sdzone.myapplication", appContext.getPackageName());
+        assertEquals("com.example.sdzone.carfi", appContext.getPackageName());
     }
 }
