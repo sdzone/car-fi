@@ -94,7 +94,12 @@ public class HomeActivity extends AppCompatActivity {
 //            }
 
                 try {
-                    usr();
+                  boolean tur=  usr(Name.getText().toString(), Password.getText().toString());
+                  if (tur ==true){
+                      openTestActivity();
+                  } else {
+                      Info.setText("Invalid Credentials");
+                  }
                 } catch (JSONException e) {
                     System.out.println("++++++++++++++++++++++++++++++");
                     e.printStackTrace();
@@ -229,11 +234,11 @@ public class HomeActivity extends AppCompatActivity {
 //    }
 //
 
-     public  void usr() throws JSONException {
+     public  boolean usr(String un,String pw) throws JSONException {
          final int[] val = new int[1];
 
          final String uname = null;
-         final String[] pw = {null};
+         //final String[] pw = {null};
          final String[] resu = new String[1];
          //Context c;
          final Gson[] gs = {new Gson()};
@@ -242,8 +247,8 @@ public class HomeActivity extends AppCompatActivity {
          HashMap<String, String> postParam = new HashMap<String, String>();
          //JSONObject jsonObject = new JSONObject("{username: uthpala , pass:123}");
 
-         postParam.put("username", "lkj");
-         postParam.put("pass", "123");
+         postParam.put("username", un);
+         postParam.put("pass", pw);
          Log.e(TAG,"asdfg");
          JsonObjectRequest jo = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(postParam), new Response.Listener<JSONObject>() {
 
@@ -252,13 +257,17 @@ public class HomeActivity extends AppCompatActivity {
 
                  //Log.e(TAG,response.toString());
 
-                 gs[0].toJson(response);
-                 Log.e(TAG,"-------------");
-                 resu[0] = gs[0].getClass().toString();
-                 Log.e(TAG, gs[0].toString());
+                 gs[1].toJson(response);
 
-                 if (resu[0]=="true"){
-                     
+                 
+                 Log.e(TAG,"-------------");
+                 resu[1] = gs[1].getClass().toString();
+                 Log.e(TAG, gs[1].toString());
+
+                 if (resu[1]=="true"){
+
+                     val[1]=1;
+
                  }
 
 //                 if(response.length() > 0){
@@ -293,6 +302,15 @@ public class HomeActivity extends AppCompatActivity {
 
          };
            queue.add(jo);
+
+           System.out.print(val);
+
+           if(val[1]==1){
+               return true;
+           }
+           else {
+               return false;
+           }
 
      }
 
