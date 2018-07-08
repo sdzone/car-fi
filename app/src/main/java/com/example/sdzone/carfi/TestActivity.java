@@ -27,6 +27,7 @@ public class TestActivity extends AppCompatActivity {
     private StringRequest LstringRequest; //volley sttringrequest
     private String url="http://www.google.com";//specify the connection "URI"
     private static final String TAG = HomeActivity.class.getSimpleName();
+    private Button addacar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +36,19 @@ public class TestActivity extends AppCompatActivity {
 
         button =(Button)findViewById(R.id.bn);
         textView=(TextView)findViewById(R.id.txt);
-       button.setOnClickListener(new View.OnClickListener() {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SendRequestAndPrint();
             }
         });
-
+        addacar=(Button)findViewById(R.id.addcarbn);
+        addacar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openaddacarActivity();
+            }
+        });
 
 
 
@@ -80,6 +87,11 @@ public class TestActivity extends AppCompatActivity {
         Intent intent = new Intent(this,TestActivity.class);
         startActivity(intent);
     }
+    public void openaddacarActivity(){
+        Intent intent = new Intent(this,AddCarActivity.class);
+        startActivity(intent);
+    }
+
 
     private void SendRequestAndPrint() {
 

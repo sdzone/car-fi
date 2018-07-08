@@ -1,5 +1,7 @@
 package com.example.sdzone.carfi;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,14 +16,18 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,16 +46,24 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = HomeActivity.class.getSimpleName();
     private Button buttonReg;
     private boolean res;
+    private Button sell;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         buttonReg=(Button)findViewById(R.id.button2);
+        sell=(Button)findViewById(R.id.sellbn);
         buttonReg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openTestActivity();
+            }
+        });
+        sell.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openSellActivity();
             }
         });
 
@@ -69,23 +83,35 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //validate(Name.getText().toString(), Password.getText().toString());
 
-               res=usr();
-               if (res==true){
-                   openTestActivity();
-               }
-               else {
-                   Info.setText("Invalid credentials.");
-               }
-               //server connection method
+//               res=usr();
+//               if (res==true){
+//                   openTestActivity();
+//               }
+//               else {
+//                   Info.setText("Invalid credentials.");
+//               }
+//               //server connection method
+//            }
+
+                try {
+                    usr();
+                } catch (JSONException e) {
+                    System.out.println("++++++++++++++++++++++++++++++");
+                    e.printStackTrace();
+                }
             }
-        });
+            });
     }
+
 
     public void openTestActivity(){
         Intent intent = new Intent(this,TestActivity.class);
         startActivity(intent);
     }
-
+    public void openSellActivity(){
+        Intent intent = new Intent(this,SellActivity.class);
+        startActivity(intent);
+    }
 
 
     private void SendRequestAndPrint() {
@@ -203,21 +229,51 @@ public class HomeActivity extends AppCompatActivity {
 //    }
 //
 
-     public  boolean usr(){
+     public  void usr() throws JSONException {
          final int[] val = new int[1];
+
+         final String uname = null;
+         final String[] pw = {null};
+         final String[] resu = new String[1];
+         //Context c;
+         final Gson[] gs = {new Gson()};
          RequestQueue queue = Volley.newRequestQueue(this);
 
-         HashMap<String, String> postParam= new HashMap<String, String>();
-         //JSONObject jsonObject = new JSONObject("{\"username\": \"uthpala\" , \"pass\":\"123\"}");
+         HashMap<String, String> postParam = new HashMap<String, String>();
+         //JSONObject jsonObject = new JSONObject("{username: uthpala , pass:123}");
 
-         postParam.put("username", "xyz@gmail.com");
-         postParam.put("pass", "somepasswordhere");
-
-         JsonObjectRequest jo = new JsonObjectRequest(Request.Method.POST,url,new JSONObject(postParam), new Response.Listener<JSONObject>() {
+         postParam.put("username", "lkj");
+         postParam.put("pass", "123");
+         Log.e(TAG,"asdfg");
+         JsonObjectRequest jo = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(postParam), new Response.Listener<JSONObject>() {
 
              @Override
              public void onResponse(JSONObject response) {
-                 val[0] = Integer.parseInt(response.toString());
+
+                 //Log.e(TAG,response.toString());
+
+                 gs[0].toJson(response);
+                 Log.e(TAG,"-------------");
+                 resu[0] = gs[0].getClass().toString();
+                 Log.e(TAG, gs[0].toString());
+
+                 if (resu[0]=="true"){
+                     
+                 }
+
+//                 if(response.length() > 0){
+//                     for(int i = 0 ; i < response.lengthh() ; i++ ){
+//                         try{
+//                             JSONObject jsonres = response.getJSONObject(i);
+//                             Log.e(TAG,jsonres.toString());
+//                         } catch (Exception e ){
+//
+//                         }
+//
+//                     }
+//                 }
+
+
              }
          },
                  new Response.ErrorListener() {
@@ -225,29 +281,22 @@ public class HomeActivity extends AppCompatActivity {
                      public void onErrorResponse(VolleyError error) {
                          Log.e("HttpClient", "error: " + error.toString());
                      }
-                 })
-         {
+                 }) {
 
-             @Override
-             public Map<String, String> getHeaders() throws AuthFailureError {
-                 Map<String,String> params = new HashMap<String, String>();
-                 params.put("Content-Type", "application/json; charset=utf-8");
-                 return params;
-             }
+//             @Override
+//             public Map<String, String> getHeaders() throws AuthFailureError {
+//                 Map<String, String> params = new HashMap<String, String>();
+//                 params.put("Content-Type", "application/json; charset=utf-8");
+//                 return params;
+//             }
 
 
          };
-
-         queue.add(jo);
-         if(val[0] ==1){
-             return true;
-         }
-         else {
-             return false;
-         }
-
+           queue.add(jo);
 
      }
 
-}
+     }
+
+
 
