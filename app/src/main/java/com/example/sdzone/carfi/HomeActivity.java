@@ -259,7 +259,7 @@ public class HomeActivity extends AppCompatActivity {
 
                  gs[1].toJson(response);
 
-                 
+
                  Log.e(TAG,"-------------");
                  resu[1] = gs[1].getClass().toString();
                  Log.e(TAG, gs[1].toString());
