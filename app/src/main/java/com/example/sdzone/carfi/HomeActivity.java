@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
@@ -57,13 +58,13 @@ public class HomeActivity extends AppCompatActivity {
         buttonReg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openTestActivity();
+                //openTestActivity();
             }
         });
         sell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openSellActivity();
+               // openSellActivity();
             }
         });
 
@@ -83,7 +84,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //validate(Name.getText().toString(), Password.getText().toString());
 
-//               res=usr();
+//               boolean A =usr();
 //               if (res==true){
 //                   openTestActivity();
 //               }
@@ -94,18 +95,20 @@ public class HomeActivity extends AppCompatActivity {
 //            }
 
                 try {
-                  boolean tur=  usr(Name.getText().toString(), Password.getText().toString());
-                  if (tur ==true){
-                      openTestActivity();
-                  } else {
-                      Info.setText("Invalid Credentials");
-                  }
+                    boolean tur=  usr(Name.getText().toString(), Password.getText().toString());
+                    if (tur ==true){
+                        //System.out.println("++++++++++++++++++++++++++++++");
+                        //openTestActivity();
+                        Log.i(TAG, "+++++++++");
+                    } else {
+                        Info.setText("Invalid Credentials");
+                    }
                 } catch (JSONException e) {
                     System.out.println("++++++++++++++++++++++++++++++");
                     e.printStackTrace();
                 }
             }
-            });
+        });
     }
 
 
@@ -140,7 +143,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
 
-    });
+        });
 
         LrequestQueue.add(LstringRequest);
     }
@@ -232,89 +235,53 @@ public class HomeActivity extends AppCompatActivity {
 //            return false;
 //        }
 //    }
+
+    private void loadData(LoginResponse loginResponse){
+        Log.e(TAG,"-------------");
+    }
 //
 
-     public  boolean usr(String un,String pw) throws JSONException {
-         final int[] val = new int[1];
+    public  boolean usr(String un,String pw) throws JSONException {
 
-         final String uname = null;
-         //final String[] pw = {null};
-         final String[] resu = new String[1];
-         //Context c;
-         final Gson[] gs = {new Gson()};
-         RequestQueue queue = Volley.newRequestQueue(this);
+        //final String[] resu = new String[1];
+        //Context c;
+        RequestQueue queue = Volley.newRequestQueue(this);
 
-         HashMap<String, String> postParam = new HashMap<String, String>();
-         //JSONObject jsonObject = new JSONObject("{username: uthpala , pass:123}");
+        HashMap<String, String> postParam = new HashMap<String, String>();
+        //JSONObject jsonObject = new JSONObject("{username: uthpala , pass:123}");
+        final String loginresult =  "false";
+        postParam.put("username", un);
+        postParam.put("pass", pw);
+        JsonObjectRequest jo = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(postParam), new Response.Listener<JSONObject>() {
 
-         postParam.put("username", un);
-         postParam.put("pass", pw);
-         Log.e(TAG,"asdfg");
-         JsonObjectRequest jo = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(postParam), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
 
-             @Override
-             public void onResponse(JSONObject response) {
+                Gson gson = new Gson();
+                LoginResponse loginResponse = gson.fromJson(response.toString(), LoginResponse.class);
+                loadData(loginResponse);
+String loginResult = loginResponse.isValid.toString();
+                Log.e(TAG,loginResult);
+                if(loginResult.contains("true")){
+                    Log.e(TAG,loginResponse.isValid.toString());
+                    openTestActivity();
+                }
+            }
+        },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("HttpClient", "error: " + error.toString());
+                    }
+                }) {
+        };
+        queue.add(jo);
 
-                 //Log.e(TAG,response.toString());
+        return true;
 
-                 gs[1].toJson(response);
+    }
 
-
-                 Log.e(TAG,"-------------");
-                 resu[1] = gs[1].getClass().toString();
-                 Log.e(TAG, gs[1].toString());
-
-                 if (resu[1]=="true"){
-
-                     val[1]=1;
-
-                 }
-
-//                 if(response.length() > 0){
-//                     for(int i = 0 ; i < response.lengthh() ; i++ ){
-//                         try{
-//                             JSONObject jsonres = response.getJSONObject(i);
-//                             Log.e(TAG,jsonres.toString());
-//                         } catch (Exception e ){
-//
-//                         }
-//
-//                     }
-//                 }
-
-
-             }
-         },
-                 new Response.ErrorListener() {
-                     @Override
-                     public void onErrorResponse(VolleyError error) {
-                         Log.e("HttpClient", "error: " + error.toString());
-                     }
-                 }) {
-
-//             @Override
-//             public Map<String, String> getHeaders() throws AuthFailureError {
-//                 Map<String, String> params = new HashMap<String, String>();
-//                 params.put("Content-Type", "application/json; charset=utf-8");
-//                 return params;
-//             }
-
-
-         };
-           queue.add(jo);
-
-           System.out.print(val);
-
-           if(val[1]==1){
-               return true;
-           }
-           else {
-               return false;
-           }
-
-     }
-
-     }
+}
 
 
 
