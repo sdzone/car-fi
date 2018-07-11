@@ -41,9 +41,9 @@ public class HomeActivity extends AppCompatActivity {
     private int counter = 5;
     private RequestQueue LrequestQueue; //volley request queue
     private StringRequest LstringRequest; //volley sttringrequest
-    private RequestQueue LoginRq ;
-    private JsonObjectRequest loginJq;
-    private String url="http://192.168.8.103:7077/carfi/values/userlogin";//specify the connection "URI"
+//    private RequestQueue LoginRq ;
+//    private JsonObjectRequest loginJq;
+    private String url="http://192.168.1.2:6770/carfi/values/userlogin";//specify the connection "URI"
     private static final String TAG = HomeActivity.class.getSimpleName();
     private Button buttonReg;
     private boolean res;
@@ -58,13 +58,13 @@ public class HomeActivity extends AppCompatActivity {
         buttonReg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //openTestActivity();
+                openTestActivity();
             }
         });
         sell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // openSellActivity();
+                openSellActivity();
             }
         });
 
@@ -114,6 +114,10 @@ public class HomeActivity extends AppCompatActivity {
 
     public void openTestActivity(){
         Intent intent = new Intent(this,TestActivity.class);
+        startActivity(intent);
+    }
+    public void openSecondActivity() {
+        Intent intent = new Intent(this, SecondActivity.class);
         startActivity(intent);
     }
     public void openSellActivity(){
@@ -264,7 +268,8 @@ String loginResult = loginResponse.isValid.toString();
                 Log.e(TAG,loginResult);
                 if(loginResult.contains("true")){
                     Log.e(TAG,loginResponse.isValid.toString());
-                    openTestActivity();
+                   // openTestActivity();
+                    openSecondActivity();
                 }
             }
         },
