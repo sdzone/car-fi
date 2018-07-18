@@ -1,49 +1,36 @@
 package com.example.sdzone.carfi;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-
-import java.util.HashMap;
-import java.util.Map;
-
-public class HomeActivity extends AppCompatActivity {
-    private EditText Name;
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
+   /* private EditText Name;
     private EditText Password;
     private TextView Info;
     private Button Login;
-    private int counter = 5;
-    private RequestQueue LrequestQueue; //volley request queue
-    private StringRequest LstringRequest; //volley sttringrequest
-//    private RequestQueue LoginRq ;
-//    private JsonObjectRequest loginJq;
-    private String url="http://192.168.1.2:6770/carfi/values/userlogin";//specify the connection "URI"
+    private TextView signup;*/
+    //public TextView signuptext;
+    private Button signup;
+
+    FirebaseAuth mAuth;
+    EditText editTextEmail, editTextPassword;
+    ProgressBar progressbar;
+
+
     private static final String TAG = HomeActivity.class.getSimpleName();
     private Button buttonReg;
     private boolean res;
@@ -53,240 +40,129 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        buttonReg=(Button)findViewById(R.id.button2);
-        sell=(Button)findViewById(R.id.sellbn);
-        buttonReg.setOnClickListener(new View.OnClickListener() {
+
+
+        editTextEmail = (EditText) findViewById(R.id.editTextEmail);
+        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+        progressbar=(ProgressBar)findViewById(R.id.progressbar);
+       /* signup=(TextView)findViewById(R.id.textViewSignup1);
+        signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openTestActivity();
+                openTestActivity ();
             }
-        });
-        sell.setOnClickListener(new View.OnClickListener() {
+        });*/
+
+
+     /*   signuptext=(TextView)findViewById(R.id.SIGNUPTEXT);
+        signuptext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openSellActivity();
+                openTestActivity ();
             }
-        });
+        });*/
 
-
-        Name = (EditText)findViewById(R.id.etName);
-        Password = (EditText)findViewById(R.id.etPassword);
-        Info = (TextView)findViewById(R.id.tvInfo);
-        Login = (Button)findViewById(R.id.btnLogin);
-
-
-        Info.setText("No of attempts remaining: 5");
-
-
-
-        Login.setOnClickListener(new View.OnClickListener() {
+        signup=(Button)findViewById(R.id.signupbn);
+        signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //validate(Name.getText().toString(), Password.getText().toString());
-
-//               boolean A =usr();
-//               if (res==true){
-//                   openTestActivity();
-//               }
-//               else {
-//                   Info.setText("Invalid credentials.");
-//               }
-//               //server connection method
-//            }
-
-                try {
-                    boolean tur=  usr(Name.getText().toString(), Password.getText().toString());
-                    if (tur ==true){
-                        //System.out.println("++++++++++++++++++++++++++++++");
-                        //openTestActivity();
-                        Log.i(TAG, "+++++++++");
-                    } else {
-                        Info.setText("Invalid Credentials");
-                    }
-                } catch (JSONException e) {
-                    System.out.println("++++++++++++++++++++++++++++++");
-                    e.printStackTrace();
-                }
+                //openTestActivity ();
+               // openAddaCarActivity();
+                openSignUpActivity();
             }
         });
+
+
+
+
+        mAuth = FirebaseAuth.getInstance();
+
+        findViewById(R.id.buttonLogin).setOnClickListener(this);
+       // findViewById(R.id.textViewSignup1).setOnClickListener(this);
+
+       /*
+        public void openSecondActivity () {
+            Intent intent = new Intent(this, SecondActivity.class);
+            startActivity(intent);
+        }
+
+        public void openSellActivity () {
+            Intent intent = new Intent(this, SellActivity.class);
+            startActivity(intent);
+        }*/
+
+
     }
-
-
-    public void openTestActivity(){
-        Intent intent = new Intent(this,TestActivity.class);
+    public void openTestActivity () {
+        Intent intent = new Intent(this, TestActivity.class);
         startActivity(intent);
     }
-    public void openSecondActivity() {
-        Intent intent = new Intent(this, SecondActivity.class);
-        startActivity(intent);
-    }
-    public void openSellActivity(){
-        Intent intent = new Intent(this,SellActivity.class);
+    public void openSignUpActivity() {
+        Intent intent = new Intent(this, SignUpActivity.class);
         startActivity(intent);
     }
 
+    private void userLogin(){
 
-    private void SendRequestAndPrint() {
+        String email = editTextEmail.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
 
-        LrequestQueue = Volley.newRequestQueue(this);//creating a simple request
-        LstringRequest= new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {//GET method
+        if (email.isEmpty()) {
+            editTextEmail.setError("Email is required");
+            editTextEmail.requestFocus();
+            return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editTextEmail.setError("Please enter a valid email");
+            editTextEmail.requestFocus();
+            return;
+        }
+
+        if (password.isEmpty()) {
+            editTextPassword.setError("Password is required");
+            editTextPassword.requestFocus();
+            return;
+        }
+
+        if (password.length() < 6) {
+            editTextPassword.setError("Minimum lenght of password should be 6");
+            editTextPassword.requestFocus();
+            return;
+        }
+        progressbar.setVisibility(View.VISIBLE);
+        mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onResponse(String response) {
+            public void onComplete(@NonNull Task<AuthResult> task) {
 
-                Log.i(TAG, response.toString());
-                Info.setText("Response is: "+ response.substring(0,10));
-
-
+                progressbar.setVisibility(View.GONE);
+                if (task.isSuccessful()){
+                Intent intent = new Intent(HomeActivity.this,SecondActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                }else
+                    Toast.makeText(getApplicationContext(),task.getException().getMessage(),Toast.LENGTH_SHORT).show();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.i(TAG,error.toString());
-                Info.setText("That didn't work!");
-            }
-
-
-
         });
 
-        LrequestQueue.add(LstringRequest);
     }
 
-//   ew/f
-//
-//    public boolean login_usr(String usrid,String passwd)
-//    {
-//        final int[] val =new int[1];
-//
-//           Map<String, String> postParam= new HashMap<String, String>();
-//            postParam.put("un", "xyz@gmail.com");
-//            postParam.put("p", "somepasswordhere");
-//
-//
-//         JsonObjectRequest jsonObjReq = new JsonObjectRequest (Request.Method.POST,
-//            url, new JSONObject(postParam),
-//            new Response.Listener<JSONObject>() {
-//
-//                @Override
-//                public void onResponse(JSONObject response) {
-//                    Log.d(TAG, response.toString());
-//
-//                    val[0] = Integer.parseInt(response.toString());
-//                    hideProgressDialog();
-//                }
-//            }, new Response.ErrorListener() {
-//
-//        @Override
-//        public void onErrorResponse(VolleyError error) {
-//            VolleyLog.d(TAG, "Error: " + error.getMessage());
-//            hideProgressDialog();
-//        }
-//    }) {
-//
-//
-//             // Adding request to request queue
-//    queue.add(jsonObjReq);
-//        if(val[0] ==1){
-//            return true;
-//        }
-//        else {
-//            return false;
-//        }
-//
-//
-//    }
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+           // case R.id.textViewSignup:
 
+               // startActivity(new Intent(this, TestActivity.class));
+               // break;
 
-//    public boolean send_usr(final String usr, final String passwd){
-//        final int[] val = new int[1];
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//        StringRequest sr = new StringRequest(Request.Method.POST, url,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        Log.e("HttpClient", "success! response: " + response.toString());
-//                        val[0] = Integer.parseInt(response.toString());
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Log.e("HttpClient", "error: " + error.toString());
-//                    }
-//                })
-//        {
-//            @Override
-//            protected Map<String,String> getParams(){
-//                Map<String,String> params = new HashMap<String, String>();
-//                params.put("user",usr);
-//                params.put("pass",passwd);
-//                return params;
-//            }
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                Map<String,String> params = new HashMap<String, String>();
-//                params.put("Content-Type","application/x-www-form-urlencoded");
-//                return params;
-//            }
-//
-//
-//        };
-//        queue.add(sr);
-//        if(val[0] ==1){
-//          return true;
-//        }
-//        else {
-//            return false;
-//        }
-//    }
-
-    private void loadData(LoginResponse loginResponse){
-        Log.e(TAG,"-------------");
+            case R.id.buttonLogin:
+               userLogin();
+               break;
+        }
     }
-//
-
-    public  boolean usr(String un,String pw) throws JSONException {
-
-        //final String[] resu = new String[1];
-        //Context c;
-        RequestQueue queue = Volley.newRequestQueue(this);
-
-        HashMap<String, String> postParam = new HashMap<String, String>();
-        //JSONObject jsonObject = new JSONObject("{username: uthpala , pass:123}");
-        final String loginresult =  "false";
-        postParam.put("username", un);
-        postParam.put("pass", pw);
-        JsonObjectRequest jo = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(postParam), new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-
-                Gson gson = new Gson();
-                LoginResponse loginResponse = gson.fromJson(response.toString(), LoginResponse.class);
-                loadData(loginResponse);
-String loginResult = loginResponse.isValid.toString();
-                Log.e(TAG,loginResult);
-                if(loginResult.contains("true")){
-                    Log.e(TAG,loginResponse.isValid.toString());
-                   // openTestActivity();
-                    openSecondActivity();
-                }
-            }
-        },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("HttpClient", "error: " + error.toString());
-                    }
-                }) {
-        };
-        queue.add(jo);
-
-        return true;
-
-    }
-
 }
+//
+//
+//
 
-
-
+//

@@ -1,13 +1,17 @@
 package com.example.sdzone.carfi;
 
 import android.content.Intent;
-import android.service.voice.VoiceInteractionSession;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -15,12 +19,20 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
-public class TestActivity extends AppCompatActivity {
+public class TestActivity extends AppCompatActivity implements View.OnClickListener{
 
-  /* private Button button;
-    private  TextView textView;
-    private String server_url="http://192.168.1.2/greetings.php";*/
+    EditText editTextEmail, editTextPassword;
+    private FirebaseAuth mAuth;
+   ProgressBar progressbar;
+
+
+
   private TextView textView;
     private Button button;
     private RequestQueue LrequestQueue; //volley request queue
@@ -34,21 +46,22 @@ public class TestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
 
-        button =(Button)findViewById(R.id.bn);
-        textView=(TextView)findViewById(R.id.txt);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SendRequestAndPrint();
-            }
-        });
-        addacar=(Button)findViewById(R.id.addcarbn);
-        addacar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openaddacarActivity();
-            }
-        });
+        editTextEmail = (EditText) findViewById(R.id.editTextEmail);
+        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+    progressbar=(ProgressBar)findViewById(R.id.progressbar);
+        mAuth = FirebaseAuth.getInstance();
+        findViewById(R.id.buttonSignUp).setOnClickListener(this);
+        findViewById(R.id.textViewSignup1).setOnClickListener(this);
+
+
+
+
+
+
+        button =(Button)findViewById(R.id.buttonSignUp);
+        //textView=(TextView)findViewById(R.id.txt);
+
+
 
 
 
@@ -117,5 +130,82 @@ public class TestActivity extends AppCompatActivity {
         });
 
         LrequestQueue.add(LstringRequest);
+    }
+
+    private void registerUser(){
+        String email = editTextEmail.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
+
+        if (email.isEmpty()) {
+            editTextEmail.setError("Email is required");
+            editTextEmail.requestFocus();
+            return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editTextEmail.setError("Please enter a valid email");
+            editTextEmail.requestFocus();
+            return;
+        }
+
+        if (password.isEmpty()) {
+            editTextPassword.setError("Password is required");
+            editTextPassword.requestFocus();
+            return;
+        }
+
+        if (password.length() < 6) {
+            editTextPassword.setError("Minimum lenght of password should be 6");
+            editTextPassword.requestFocus();
+            return;
+        }
+
+
+        progressbar.setVisibility(View.VISIBLE);
+
+        mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                progressbar.setVisibility(View.GONE);
+                if (task.isSuccessful()){
+                    //Toast.makeText(getApplicationContext(),"User Registered successfully",Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(TestActivity.this,SecondActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+
+
+                }else
+                    if (task.getException() instanceof FirebaseAuthUserCollisionException){
+
+                    Toast.makeText(getApplicationContext(),"you are allready registered",Toast.LENGTH_SHORT).show();
+
+                }else
+                       // Toast.makeText(getApplicationContext(),"some error occured",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),task.getException().getMessage(),Toast.LENGTH_SHORT).show();
+
+                   //
+
+
+            }
+        });
+
+    }
+
+
+
+
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.buttonSignUp:
+                registerUser();
+                break;
+
+            case R.id.textViewLogin:
+                //finish();
+                startActivity(new Intent(this, HomeActivity.class));
+                break;
+        }
     }
 }
