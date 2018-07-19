@@ -137,6 +137,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                 progressbar.setVisibility(View.GONE);
                 if (task.isSuccessful()){
+                    finish();
                 Intent intent = new Intent(HomeActivity.this,SecondActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
@@ -158,6 +159,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.buttonLogin:
                userLogin();
                break;
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mAuth.getCurrentUser() !=null){
+            finish();
+            startActivity(new Intent(this,SecondActivity.class));
         }
     }
 }

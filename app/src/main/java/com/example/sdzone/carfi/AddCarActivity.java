@@ -1,31 +1,40 @@
 package com.example.sdzone.carfi;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
-public class AddCarActivity extends AppCompatActivity {
+public class AddCarActivity extends AppCompatActivity implements View.OnClickListener{
+
+    private static final int CHOOSE_IMAGE = 101;
     AutoCompleteTextView suggestion_box;
     Spinner items;
     //camera
     Button button;
-    ImageView imageView;
-    static final int CAM_REQUEST=1;
+
+    ImageView imageViewaa;
+    EditText editText;
+    Uri uriProfileImage;
+    TextView texa;
+
+
+
+   // static final int CAM_REQUEST=1;
 
 
     ArrayList<String> foods = new ArrayList<>();
@@ -34,21 +43,14 @@ public class AddCarActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        imageViewaa = (ImageView) findViewById(R.id.ImageSelect);
+        editText = (EditText) findViewById(R.id.editTextDisplayName);
+        texa=(TextView)findViewById(R.id.textView8);
+
             setContentView(R.layout.activity_add_car);
+           //
 
-//camera
-        button=(Button)findViewById(R.id.button);
-        imageView=(ImageView)findViewById(R.id.imageView);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                File file= getFile();
-                camera_intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                startActivityForResult(camera_intent,CAM_REQUEST);
 
-            }
-        });
 
 
         suggestion_box = (AutoCompleteTextView) findViewById(R.id.suggestion_box);
@@ -262,24 +264,54 @@ public class AddCarActivity extends AppCompatActivity {
         suggestion_box.setAdapter(adapter);
         items.setAdapter(adapter);
 
-
     }
 
-private File getFile(){
 
-        File folder = new File("sdcard/camera_app");
-    //File folder = new File(Environment.getExternalStorageDirectory(),"camera_app");
-        if (!folder.exists()){
-            folder.mkdir();
-        }
-        File image_file= new File(folder,"cam_image.jpg");
-
-        return image_file;
-}
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-String path="sdcard/camera_app/cam_image.jpg";
-imageView.setImageDrawable(Drawable.createFromPath(path));
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode==CHOOSE_IMAGE && resultCode==RESULT_OK&&data!=null&&data.getData()!=null){
+            uriProfileImage=data.getData();
+            try {
+                Bitmap bitmap =MediaStore.Images.Media.getBitmap(getContentResolver(),uriProfileImage);
+               imageViewaa.setImageBitmap(bitmap);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+    }
+
+
+
+
+    public void openSellActivity() {
+        Intent intent = new Intent(this, SellActivity.class);
+        startActivity(intent);
+  }
+
+
+
+
+    private void showImageChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Profile Image"), CHOOSE_IMAGE);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.textView8:
+                showImageChooser();
+                break;
+        }
     }
 }

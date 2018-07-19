@@ -33,7 +33,8 @@
         <activity android:name=".FindActivity" />
         <activity android:name=".TestActivity" />
         <activity android:name=".AddCarActivity" />
-        <activity android:name=".SignUpActivity"></activity>
+        <activity android:name=".SignUpActivity" />
+        <activity android:name=".CarAdd2Activity"></activity>
     </application>
 
 </manifest>

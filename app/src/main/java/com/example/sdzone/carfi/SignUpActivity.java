@@ -107,8 +107,9 @@ public class SignUpActivity extends AppCompatActivity  {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressbar.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
+                    finish();
                     //Toast.makeText(getApplicationContext(),"User Registered successfully",Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
+                    Intent intent = new Intent(SignUpActivity.this, SecondActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
 

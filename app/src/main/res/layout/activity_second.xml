@@ -13,7 +13,7 @@
     android:id="@+id/ll">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/ViewCar"
         android:layout_width="255dp"
         android:layout_height="234dp"
         app:srcCompat="@drawable/carfi" />
@@ -103,5 +103,11 @@
         </android.support.v7.widget.CardView>
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/addacarbn"
+        android:layout_width="196dp"
+        android:layout_height="37dp"
+        android:text="ADD A CAR" />
 
 </LinearLayout>

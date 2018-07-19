@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "357983356215",
+    "firebase_url": "https://car-fi-263c1.firebaseio.com",
+    "project_id": "car-fi-263c1",
+    "storage_bucket": "car-fi-263c1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:357983356215:android:f71380adfcc7a573",
+        "android_client_info": {
+          "package_name": "com.example.sdzone.carfi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "357983356215-02pnnihrfuv7gt70h6fg4k2qrkmju370.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sdzone.carfi",
+            "certificate_hash": "b41df211d85c7ad9906291310b18dcc9e60b1274"
+          }
+        },
+        {
+          "client_id": "357983356215-3tjm0fg9q0q101iml1s9ju4lugpc3p7k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8PDsAtvdImmnA_iI9TWw5HjDXLrqesmM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "357983356215-3tjm0fg9q0q101iml1s9ju4lugpc3p7k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
